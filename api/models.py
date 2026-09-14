@@ -3,13 +3,13 @@ from django.db import models
 # Classe do Paciente
 class PacienteDengue(models.Model):
     numero_notificacao = models.CharField(max_length=50, null=True, blank=True)
+    id_unidade = models.TextField(null=True, blank=True)
     nome_paciente = models.CharField(max_length=100, null=True, blank=True)
     endereco = models.TextField(null=True, blank=True)
     data_notificacao = models.DateField(null=True, blank=True)
     data_pri_sintoma = models.DateField(null=True, blank=True)
     data_nascimento = models.DateField(null=True, blank=True)
     id_agravo = models.TextField(null=True, blank=True)
-    id_unidade = models.TextField(null=True, blank=True)
     hospital = models.TextField(null=True, blank=True)
     cs_sexo = models.TextField(null=True, blank=True)
     classi_fin = models.TextField(null=True, blank=True)
@@ -26,19 +26,19 @@ class PacienteTuberculose(models.Model):
         return f"{self.nm_ubs} - {self.nu_notific}"
 
 class PacienteSifilis(models.Model):
-    mu_notific=models.TextField(null=True, blank=True)
+    nu_notific=models.TextField(null=True, blank=True)
+    id_unidade = models.TextField(null=True, blank=True)
     un_saude=models.TextField(null=True, blank=True)
     nm_ubs = models.TextField(null=True, blank=True)
     mu_residen=models.TextField(null=True, blank=True)
-    nu_notific=models.TextField(null=True, blank=True)
     dt_notific=models.DateField(null=True, blank=True)
     id_agravo=models.TextField(null=True, blank=True)
     nm_pacient=models.TextField(null=True, blank=True)
 
 class PacienteViolenciaDomestica(models.Model):
+    nu_notific = models.TextField(null=True, blank=True)
     id_unidade = models.TextField(null=True, blank=True)
     nm_ubs = models.TextField(null=True, blank=True)
-    nu_notific = models.TextField(null=True, blank=True)
 
 class UploadDBF(models.Model):
     arquivo = models.FileField(upload_to='dbfs/')

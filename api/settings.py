@@ -24,6 +24,7 @@ ALLOWED_HOSTS = [
     "0.0.0.0",
     "api-data-sigma-lovat.vercel.app",
     "api-data-backend.onrender.com",
+    "192.168.137.1"
 ]
 
 

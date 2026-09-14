@@ -7,25 +7,25 @@ from datetime import datetime
 
 @admin.register(PacienteDengue)
 class PacienteDengueAdmin(admin.ModelAdmin):
-    list_display = ("numero_notificacao", "nome_paciente", "data_notificacao", "endereco", "data_nascimento",
-                    "data_pri_sintoma", "id_agravo", "id_unidade", "hospital", "cs_sexo", "classi_fin")
-    search_fields = ("numero_notificacao", "nome_paciente", "classi_fin", "endereco", "id_unidade")
+    list_display = ("numero_notificacao", "id_unidade", "nome_paciente", "data_notificacao", "endereco", "data_nascimento",
+                    "data_pri_sintoma", "id_agravo", "hospital", "cs_sexo", "classi_fin")
+    search_fields = ("endereco", "id_unidade")
 
 
 @admin.register(PacienteTuberculose)
 class PacienteTuberculoseAdmin(admin.ModelAdmin):
-    list_display = ("id_unidade", "nm_ubs", "nu_notific")
+    list_display = ("nu_notific", "id_unidade", "nm_ubs")
     search_fields = ("id_unidade", "nm_ubs", "nu_notific")
 
 @admin.register(PacienteSifilis)
 class PacienteSifilisAdmin(admin.ModelAdmin):
-    list_display = ("mu_notific", "un_saude", "nm_ubs", "mu_residen", "nu_notific", "dt_notific", "id_agravo", "nm_pacient")
-    search_fields = ("mu_notific", "un_saude", "nm_ubs", "mu_residen", "nu_notific", "dt_notific", "id_agravo", "nm_pacient")
+    list_display = ("nu_notific", "id_unidade", "un_saude", "nm_ubs", "mu_residen", "nu_notific", "dt_notific", "id_agravo", "nm_pacient")
+    search_fields = ("nu_notific", "nu_notific", "id_agravo", "id_unidade")
 
 @admin.register(PacienteViolenciaDomestica)
 class PacienteViolenciaDomesticaAdmin(admin.ModelAdmin):
-    list_display = ("id_unidade", "nm_ubs", "nu_notific")
-    search_fields = ("id_unidade", "nm_ubs", "nu_notific")
+    list_display = ("nu_notific", "id_unidade", "nm_ubs")
+    search_fields = ("nu_notific", "id_unidade", "nm_ubs")
 
 @admin.register(UploadDBF)
 class UploadDBFAdmin(admin.ModelAdmin):
@@ -103,8 +103,8 @@ class UploadDBFAdmin(admin.ModelAdmin):
 
             elif 'violencia' in nome_arquivo:
                 nova_linha = PacienteViolenciaDomestica(
-                    id_unidade=record.get('ID_UNIDADE'),
-                    nm_ubs=record.get('NM_UBS'),
+                    id_unidade=record.get('ID_UNIDADE') or record.get('ID_UNID'),
+                    nm_ubs=record.get('NM_UBS') or record.get('ID_UBS'),
                     nu_notific=record.get('NU_NOTIFIC'),
                 )
                 registros_violencia.append(nova_linha)
