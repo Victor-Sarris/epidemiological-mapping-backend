@@ -1,7 +1,8 @@
 import os
 from django.contrib import admin
 from dbfread import DBF
-from .models import PacienteDengue, PacienteTuberculose, PacienteSifilis,UploadDBF, PacienteViolenciaDomestica
+
+from .models import PacienteDengue, PacienteTuberculose, PacienteSifilis,UploadDBF, PacienteChagas, PacienteViolenciaDomestica, PacienteHans, PacienteHepatite, PacienteAnimaisPec, PacienteIntoxicacao, PacienteLeish, PacienteAidsAdulto
 from datetime import datetime
 
 
@@ -14,7 +15,7 @@ class PacienteDengueAdmin(admin.ModelAdmin):
 
 @admin.register(PacienteTuberculose)
 class PacienteTuberculoseAdmin(admin.ModelAdmin):
-    list_display = ("nu_notific", "id_unidade", "nm_ubs")
+    list_display = ("id_unidade", "nm_ubs", "nu_notific")
     search_fields = ("id_unidade", "nm_ubs", "nu_notific")
 
 @admin.register(PacienteSifilis)
@@ -22,18 +23,51 @@ class PacienteSifilisAdmin(admin.ModelAdmin):
     list_display = ("nu_notific", "id_unidade", "un_saude", "nm_ubs", "mu_residen", "nu_notific", "dt_notific", "id_agravo", "nm_pacient")
     search_fields = ("nu_notific", "nu_notific", "id_agravo", "id_unidade")
 
+@admin.register(PacienteChagas)
+class PacienteChagasAdmin(admin.ModelAdmin):
+    list_display = ("id_unidade", "nm_ubs", "nu_notific")
+    search_fields = ("id_unidade", "nm_ubs", "nu_notific")
+
 @admin.register(PacienteViolenciaDomestica)
 class PacienteViolenciaDomesticaAdmin(admin.ModelAdmin):
-    list_display = ("nu_notific", "id_unidade", "nm_ubs")
+    list_display = ("id_unidade", "nm_ubs", "nu_notific")
     search_fields = ("nu_notific", "id_unidade", "nm_ubs")
+
+@admin.register(PacienteHans)
+class PacienteHansAdmin(admin.ModelAdmin):
+    list_display = ("id_unidade", "nm_ubs", "nu_notific")
+    search_fields = ("nu_notific", "id_unidade", "nm_ubs")
+
+@admin.register(PacienteHepatite)
+class PacienteHepatiteAdmin(admin.ModelAdmin):
+    list_display = ("id_unidade", "nm_ubs", "nu_notific")
+    search_fields = ("nu_notific", "id_unidade", "nm_ubs")
+
+@admin.register(PacienteAnimaisPec)
+class PacienteAnimaisPecAdmin(admin.ModelAdmin):
+    list_display = ("id_unidade", "nm_ubs", "hospital", "nu_notific")
+    search_fields = ("id_unidade", "nm_ubs", "hospital", "nu_notific")
+
+@admin.register(PacienteIntoxicacao)
+class PacienteIntoxicacaoAdmin(admin.ModelAdmin):
+    list_display = ("ano_notific", "nu_notific" )
+    search_fields = ("ano_notific", "nu_notific")
+
+@admin.register(PacienteLeish)
+class PacienteLeishAdmin(admin.ModelAdmin):
+    list_display = ("ano_notific", "nu_notific")
+    search_fields = ("ano_notific", "nu_notific")
+
+@admin.register(PacienteAidsAdulto)
+class PacienteAidsAdultoAdmin(admin.ModelAdmin):
+    list_display = ("ano_notific", "nu_notific")
+    search_fields = ("ano_notific", "nu_notific")
 
 @admin.register(UploadDBF)
 class UploadDBFAdmin(admin.ModelAdmin):
     def save_model(self, request, obj, form, change):
         super().save_model(request, obj, form, change)
-
         nome_arquivo = os.path.basename(obj.arquivo.name).lower()
-
         table = DBF(obj.arquivo.path, encoding='iso-8859-1', load=True, ignore_missing_memofile=True)
 
         def formatar_data(valor_data):
@@ -52,6 +86,13 @@ class UploadDBFAdmin(admin.ModelAdmin):
         registros_tubercu = []
         registros_sifi = []
         registros_violencia = []
+        registros_chagas = []
+        registros_hans = []
+        registros_hepatite = []
+        registros_animaispec = []
+        registros_intoxi = []
+        registros_leish = []
+        registros_aids = []
 
         for record in table:
             if 'deng' in nome_arquivo:
@@ -64,7 +105,6 @@ class UploadDBFAdmin(admin.ModelAdmin):
                 ]
                 partes_validadas = [str(p).strip() for p in partes_endereco if p and str(p).strip()]
                 endereco_formatado = ", ".join(partes_validadas)
-
                 nova_linha = PacienteDengue(
                     numero_notificacao=record.get('NU_NOTIFIC'),
                     nome_paciente=record.get('NM_PACIENT'),
@@ -109,11 +149,79 @@ class UploadDBFAdmin(admin.ModelAdmin):
                 )
                 registros_violencia.append(nova_linha)
 
+            elif 'chaga' in nome_arquivo:
+                nova_linha = PacienteChagas(
+                    id_unidade=record.get('ID_UNIDADE') or record.get('ID_UNID'),
+                    nm_ubs=record.get('NM_UBS') or record.get('ID_UBS'),
+                    nu_notific=record.get('NU_NOTIFIC') or record.get('NU_NOTIFICA'),
+                )
+                registros_chagas.append(nova_linha)
+
+            elif 'hans' in nome_arquivo:
+                nova_linha = PacienteHans(
+                    id_unidade=record.get('ID_UNIDADE') or record.get('ID_UNID'),
+                    nm_ubs=record.get('NM_UBS') or record.get('ID_UBS'),
+                    nu_notific=record.get('NU_NOTIFIC') or record.get('NU_NOTIFICA'),
+                )
+                registros_hans.append(nova_linha)
+
+            elif 'hepatite' in nome_arquivo:
+                nova_linha = PacienteHepatite(
+                    id_unidade=record.get('ID_UNIDADE') or record.get('ID_UNID'),
+                    nm_ubs=record.get('NM_UBS') or record.get('ID_UBS'),
+                    nu_notific=record.get('NU_NOTIFIC') or record.get('NU_NOTIFICA'),
+                )
+                registros_hepatite.append(nova_linha)
+
+            elif 'animaispec' in nome_arquivo:
+                nova_linha = PacienteAnimaisPec(
+                    id_unidade=record.get('ID_UNIDADE') or record.get('ID_UNID'),
+                    nm_ubs=record.get('NM_UBS') or record.get('ID_UBS'),
+                    hospital=record.get('HOSPITAL') or record.get('HOSPITAL'),
+                    nu_notific=record.get('NU_NOTIFIC') or record.get('NU_NOTIFICA'),
+                )
+                registros_animaispec.append(nova_linha)
+
+            elif 'intoxicacao' in nome_arquivo:
+                nova_linha = PacienteIntoxicacao(
+                    ano_notific=record.get('ANO_NOTIFIC'),
+                    nu_notific=record.get('NU_NOTIFIC'),
+                )
+                registros_intoxi.append(nova_linha)
+
+            elif 'leish' in nome_arquivo:
+                nova_linha = PacienteLeish(
+                    ano_notific=record.get('ANO_NOTIFIC'),
+                    nu_notific=record.get('NU_NOTIFIC'),
+                )
+                registros_leish.append(nova_linha)
+
+            elif 'aidsadulto' in nome_arquivo:
+                nova_linha = PacienteAidsAdulto(
+                    ano_notific=record.get('ANO_NOTIFIC'),
+                    nu_notific=record.get('NU_NOTIFIC'),
+                )
+                registros_aids.append(nova_linha)
+
         if registros_dengue:
             PacienteDengue.objects.bulk_create(registros_dengue, ignore_conflicts=True)
         if registros_tubercu:
             PacienteTuberculose.objects.bulk_create(registros_tubercu, ignore_conflicts=True)
-        if registros_sifi.append:
+        if registros_sifi:
             PacienteSifilis.objects.bulk_create(registros_sifi, ignore_conflicts=True)
-        if registros_violencia.append:
+        if registros_violencia:
             PacienteViolenciaDomestica.objects.bulk_create(registros_violencia, ignore_conflicts=True)
+        if registros_chagas:
+            PacienteChagas.objects.bulk_create(registros_chagas, ignore_conflicts=True)
+        if registros_hans:
+            PacienteHans.objects.bulk_create(registros_hans, ignore_conflicts=True)
+        if registros_hepatite:
+            PacienteHepatite.objects.bulk_create(registros_hepatite, ignore_conflicts=True)
+        if registros_animaispec:
+            PacienteAnimaisPec.objects.bulk_create(registros_animaispec, ignore_conflicts=True)
+        if registros_intoxi:
+            PacienteIntoxicacao.objects.bulk_create(registros_intoxi, ignore_conflicts=True)
+        if registros_leish:
+            PacienteLeish.objects.bulk_create(registros_leish, ignore_conflicts=True)
+        if registros_aids:
+            PacienteAidsAdulto.objects.bulk_create(registros_aids, ignore_conflicts=True)

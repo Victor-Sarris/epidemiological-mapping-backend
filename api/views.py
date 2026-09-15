@@ -1,11 +1,11 @@
 from rest_framework import viewsets
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from django.db.models import Count
-from .models import PacienteDengue
+from django.db.models import Count, Model
+from .models import PacienteDengue, PacienteHans, PacienteHepatite, PacienteAnimaisPec, PacienteIntoxicacao, PacienteLeish, PacienteAidsAdulto
 from .serializers import PacienteDengueSerializer, PacienteTuberculoseSerializer, PacienteViolenciaDomestica, \
     PacienteSifilis, \
-    PacienteSifilisSerializer, PacienteViolenciaDomesticaSerializer
+    PacienteSifilisSerializer, PacienteViolenciaDomesticaSerializer, PacienteChagas, PacienteChagasSerializer, PacienteHansSerializer, PacienteHepatiteSerializer, PacienteAnimaisPecSerializer, PacienteIntoxicacaoSerializer, PacienteLeishSerializer, PacienteAidsAdultoSerializer
 from api.models import PacienteTuberculose
 
 
@@ -21,9 +21,37 @@ class PacienteSifilisViewSet(viewsets.ModelViewSet):
     queryset = PacienteSifilis.objects.all()
     serializer_class = PacienteSifilisSerializer
 
+class PacienteChagasViewSet(viewsets.ModelViewSet):
+    queryset = PacienteChagas.objects.all()
+    serializer_class = PacienteChagasSerializer
+
 class PacienteViolenciaDomesticaViewSet(viewsets.ModelViewSet):
     queryset = PacienteViolenciaDomestica.objects.all()
     serializer_class = PacienteViolenciaDomesticaSerializer
+
+class PacientesHansViewSet(viewsets.ModelViewSet):
+    queryset = PacienteHans.objects.all()
+    serializer_class = PacienteHansSerializer
+
+class PacientesHepatiteViewSet(viewsets.ModelViewSet):
+    queryset = PacienteHepatite.objects.all()
+    serializer_class = PacienteHepatiteSerializer
+
+class PacienteAnimaisPecViewSet(viewsets.ModelViewSet):
+    queryset = PacienteAnimaisPec.objects.all()
+    serializer_class = PacienteAnimaisPecSerializer
+
+class PacienteIntoxicacaoViewSet(viewsets.ModelViewSet):
+    queryset = PacienteIntoxicacao.objects.all()
+    serializer_class = PacienteIntoxicacaoSerializer
+
+class PacienteLeishViewSet(viewsets.ModelViewSet):
+    queryset = PacienteLeish.objects.all()
+    serializer_class = PacienteLeishSerializer
+
+class PacienteAidsAdultoViewSet(viewsets.ModelViewSet):
+    queryset = PacienteAidsAdulto.objects.all()
+    serializer_class = PacienteAidsAdultoSerializer
 
 @api_view(['GET'])
 def casos_por_bairro(request): # funcao para agrupar o campo bairro e contar os numeros de registros

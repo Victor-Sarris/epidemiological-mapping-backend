@@ -1,5 +1,7 @@
 import os
-from api.models import PacienteDengue, PacienteTuberculose, PacienteSifilis, PacienteViolenciaDomestica
+from doctest import register_optionflag
+
+from api.models import PacienteDengue, PacienteTuberculose, PacienteSifilis, PacienteViolenciaDomestica, PacienteChagas, PacienteHans, PacienteHepatite, PacienteAnimaisPec, PacienteIntoxicacao, PacienteLeish, PacienteAidsAdulto
 from dbfread import DBF
 from datetime import datetime
 
@@ -8,6 +10,13 @@ MAPEA_ENDEMIAS = {
     'tubercu': PacienteTuberculose,
     'sifi': PacienteSifilis,
     'violencia': PacienteViolenciaDomestica,
+    'chagas': PacienteChagas,
+    'hans': PacienteHans,
+    'hepatite': PacienteHepatite,
+    'animaispec': PacienteAnimaisPec,
+    'intoxicacao': PacienteIntoxicacao,
+    'leish': PacienteLeish,
+    'aidsadulto': PacienteAidsAdulto,
 }
 
 
@@ -91,6 +100,61 @@ def processar_arquivo_dbf(caminho_arquivo):
                 nm_ubs=record.get('NM_UBS'),
                 nu_notific=record.get('NU_NOTIFIC'),
             )
+
+        elif modelo_alvo == PacienteChagas:
+            nova_linha = PacienteChagas(
+                id_unidade=record.get('ID_UNIDADE'),
+                nm_ubs=record.get('NM_UBS'),
+                nu_notific=record.get('NU_NOTIFIC'),
+            )
+            registros_para_salvar.append(nova_linha)
+
+        elif modelo_alvo == PacienteHans:
+            nova_linha = PacienteHans(
+                id_unidade=record.get('ID_UNIDADE'),
+                nm_ubs=record.get('NM_UBS'),
+                nu_notific=record.get('NU_NOTIFIC'),
+            )
+            registros_para_salvar.append(nova_linha)
+
+        elif modelo_alvo == PacienteHepatite:
+            nova_linha = PacienteHepatite(
+                id_unidade=record.get('ID_UNIDADE'),
+                nm_ubs=record.get('NM_UBS'),
+                nu_notific=record.get('NU_NOTIFIC'),
+            )
+            registros_para_salvar.append(nova_linha)
+
+        elif modelo_alvo == PacienteAnimaisPec:
+            nova_linha = PacienteAnimaisPec(
+                id_unidade=record.get('ID_UNIDADE'),
+                nm_ubs=record.get('NM_UBS'),
+                nu_notific=record.get('NU_NOTIFIC'),
+                hospital=record.get('HOSPITAL'),
+            )
+            registros_para_salvar.append(nova_linha)
+
+        elif modelo_alvo == PacienteIntoxicacao:
+            nova_linha = PacienteIntoxicacao(
+                ano_notific=record.get('ANO_NOTIFIC'),
+                nu_notific=record.get('NU_NOTIFIC'),
+            )
+
+            registros_para_salvar.append(nova_linha)
+
+        elif modelo_alvo == PacienteLeish:
+            nova_linha = PacienteLeish(
+                ano_notific=record.get('ANO_NOTIFIC'),
+                nu_notific=record.get('NU_NOTIFIC'),
+            )
+            registros_para_salvar.append(nova_linha)
+
+        elif modelo_alvo == PacienteAidsAdulto:
+            nova_linha = PacienteAidsAdulto(
+                ano_notific=record.get('ANO_NOTIFIC'),
+                nu_notific=record.get('NU_NOTIFIC'),
+            )
+            registros_para_salvar.append(nova_linha)
 
     modelo_alvo.objects.bulk_create(registros_para_salvar, ignore_conflicts=True)
 

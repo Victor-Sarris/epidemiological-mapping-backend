@@ -7,7 +7,14 @@ router = routers.DefaultRouter()
 router.register(r'dengue', views.PacienteDengueViewSet)
 router.register(r'tuberculose', views.PacienteTuberculoseViewSet)
 router.register(r'sifilis', views.PacienteSifilisViewSet)
+router.register(r'chagas', views.PacienteChagasViewSet)
 router.register(r'violencia domestica', views.PacienteViolenciaDomesticaViewSet)
+router.register(r'hans', views.PacientesHansViewSet)
+router.register(r'hepatite', views.PacientesHepatiteViewSet)
+router.register(r'animaispec', views.PacienteAnimaisPecViewSet)
+router.register(r'intoxicacao', views.PacienteIntoxicacaoViewSet)
+router.register(r'leish', views.PacienteLeishViewSet)
+router.register(r'aidsadulta', views.PacienteAidsAdultoViewSet)
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include(router.urls)),

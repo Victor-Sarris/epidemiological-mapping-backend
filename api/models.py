@@ -35,10 +35,43 @@ class PacienteSifilis(models.Model):
     id_agravo=models.TextField(null=True, blank=True)
     nm_pacient=models.TextField(null=True, blank=True)
 
+class PacienteChagas(models.Model):
+    id_unidade = models.TextField(null=True, blank=True)
+    nm_ubs = models.TextField(null=True, blank=True)
+    nu_notific = models.TextField(null=True, blank=True)
+
+class PacienteHans(models.Model):
+    id_unidade = models.TextField(null=True, blank=True)
+    nm_ubs = models.TextField(null=True, blank=True)
+    nu_notific = models.TextField(null=True, blank=True)
+
 class PacienteViolenciaDomestica(models.Model):
     nu_notific = models.TextField(null=True, blank=True)
     id_unidade = models.TextField(null=True, blank=True)
     nm_ubs = models.TextField(null=True, blank=True)
+
+class PacienteHepatite(models.Model):
+    nu_notific = models.TextField(null=True, blank=True)
+    id_unidade = models.TextField(null=True, blank=True)
+    nm_ubs = models.TextField(null=True, blank=True)
+
+class PacienteAnimaisPec(models.Model):
+    id_unidade = models.TextField(null=True, blank=True)
+    nm_ubs = models.TextField(null=True, blank=True)
+    hospital = models.TextField(null=True, blank=True)
+    nu_notific = models.TextField(null=True, blank=True)
+
+class PacienteIntoxicacao(models.Model):
+    ano_notific = models.TextField(null=True, blank=True)
+    nu_notific = models.TextField(null=True, blank=True)
+
+class PacienteLeish(models.Model):
+    ano_notific = models.TextField(null=True, blank=True)
+    nu_notific = models.TextField(null=True, blank=True)
+
+class PacienteAidsAdulto(models.Model):
+    ano_notific = models.TextField(null=True, blank=True)
+    nu_notific = models.TextField(null=True, blank=True)
 
 class UploadDBF(models.Model):
     arquivo = models.FileField(upload_to='dbfs/')
