@@ -5,7 +5,7 @@ from django.db.models import Count
 from .models import PacienteDengue
 from .serializers import PacienteDengueSerializer, PacienteTuberculoseSerializer, PacienteViolenciaDomestica, \
     PacienteSifilis, \
-    PacienteSifilisSerializer, PacienteViolenciaDomesticaSerializer
+    PacienteSifilisSerializer, PacienteViolenciaDomesticaSerializer, PacienteChagas, PacienteChagasSerializer
 from api.models import PacienteTuberculose
 
 
@@ -20,6 +20,10 @@ class PacienteTuberculoseViewSet(viewsets.ModelViewSet):
 class PacienteSifilisViewSet(viewsets.ModelViewSet):
     queryset = PacienteSifilis.objects.all()
     serializer_class = PacienteSifilisSerializer
+
+class PacienteChagasViewSet(viewsets.ModelViewSet):
+    queryset = PacienteChagas.objects.all()
+    serializer_class = PacienteChagasSerializer
 
 class PacienteViolenciaDomesticaViewSet(viewsets.ModelViewSet):
     queryset = PacienteViolenciaDomestica.objects.all()

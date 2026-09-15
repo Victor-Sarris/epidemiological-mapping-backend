@@ -7,6 +7,7 @@ router = routers.DefaultRouter()
 router.register(r'dengue', views.PacienteDengueViewSet)
 router.register(r'tuberculose', views.PacienteTuberculoseViewSet)
 router.register(r'sifilis', views.PacienteSifilisViewSet)
+router.register(r'chagas', views.PacienteChagasViewSet)
 router.register(r'violencia domestica', views.PacienteViolenciaDomesticaViewSet)
 urlpatterns = [
     path('admin/', admin.site.urls),
