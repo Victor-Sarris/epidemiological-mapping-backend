@@ -8,6 +8,13 @@ from .serializers import PacienteDengueSerializer, PacienteTuberculoseSerializer
     PacienteSifilisSerializer, PacienteViolenciaDomesticaSerializer, PacienteChagas, PacienteChagasSerializer, PacienteHansSerializer, PacienteHepatiteSerializer, PacienteAnimaisPecSerializer, PacienteIntoxicacaoSerializer, PacienteLeishSerializer, PacienteAidsAdultoSerializer
 from api.models import PacienteTuberculose
 
+from flask import Flask, render_template, request, jsonify, session
+from flask_cors import CORS
+import os
+from dotenv import load_dotenv
+import google.generativeai as genai
+from api.utils.embedding_manager import EmbeddingManager
+
 
 class PacienteDengueViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = PacienteDengue.objects.all()
