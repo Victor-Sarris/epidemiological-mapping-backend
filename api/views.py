@@ -72,7 +72,7 @@ def casos_por_bairro(request): # funcao para agrupar o campo bairro e contar os 
 # Configuração do Gemini
 genai.configure(api_key=os.getenv('GOOGLE_API_KEY'))
 # O modelo de geração de texto correto:
-modelo_chat = genai.GenerativeModel('gemini-1.5-flash')
+modelo_chat = genai.GenerativeModel('gemini-3.6-flash')
 embedding_manager = EmbeddingManager(os.getenv('GOOGLE_API_KEY'))
 
 
