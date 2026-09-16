@@ -19,4 +19,5 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include(router.urls)),
     path('api/casos_por_bairro/', views.casos_por_bairro, name='casos_por_bairro'),
+    path('api/chat/', views.chat_suporte, name='chat_suporte'),
 ]

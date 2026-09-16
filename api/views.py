@@ -60,3 +60,40 @@ def casos_por_bairro(request): # funcao para agrupar o campo bairro e contar os 
     dados_formatados = {item['bairro']: item['casos'] for item in dados if item['bairro']}
 
     return Response(dados_formatados)
+
+
+# Configuração do Gemini
+genai.configure(api_key=os.getenv('GOOGLE_API_KEY'))
+# O modelo de geração de texto correto:
+modelo_chat = genai.GenerativeModel('gemini-1.5-flash')
+embedding_manager = EmbeddingManager(os.getenv('GOOGLE_API_KEY'))
+
+
+@api_view(['POST'])
+def chat_suporte(request):
+    try:
+        user_message = request.data.get('message', '')
+
+        context = embedding_manager.search_query(user_message)
+
+        prompt = f"""Com base apenas no seguinte contexto:
+
+        {context}
+
+        Responda à pergunta: {user_message}
+        Responda de forma concisa e direta, em português."""
+
+        # Gera a resposta
+        response = modelo_chat.generate_content(prompt)
+
+        return Response({
+            'response': response.text,
+            'status': 'success'
+        })
+
+    except Exception as e:
+        print(f"Erro no chat: {str(e)}")
+        return Response({
+            'response': 'Desculpe, ocorreu um erro ao processar sua mensagem.',
+            'status': 'error'
+        }, status=500)
