@@ -16,7 +16,7 @@ import google.generativeai as genai
 from api.utils.embedding_manager import EmbeddingManager
 
 
-class PacienteDengueViewSet(viewsets.ReadOnlyModelViewSet):
+class PacienteDengueViewSet(viewsets.ModelViewSet):
     queryset = PacienteDengue.objects.all()
     serializer_class = PacienteDengueSerializer
 
