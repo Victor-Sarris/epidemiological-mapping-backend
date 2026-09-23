@@ -7,6 +7,8 @@ from .serializers import PacienteDengueSerializer, PacienteTuberculoseSerializer
     PacienteSifilis, \
     PacienteSifilisSerializer, PacienteViolenciaDomesticaSerializer, PacienteChagas, PacienteChagasSerializer, PacienteHansSerializer, PacienteHepatiteSerializer, PacienteAnimaisPecSerializer, PacienteIntoxicacaoSerializer, PacienteLeishSerializer, PacienteAidsAdultoSerializer
 from api.models import PacienteTuberculose
+from rest_framework_simplejwt.views import TokenObtainPairView
+from .serializers import CustomTokenObtainPairSerializer
 
 from flask import Flask, render_template, request, jsonify, session
 from flask_cors import CORS
@@ -59,6 +61,9 @@ class PacienteLeishViewSet(viewsets.ModelViewSet):
 class PacienteAidsAdultoViewSet(viewsets.ModelViewSet):
     queryset = PacienteAidsAdulto.objects.all()
     serializer_class = PacienteAidsAdultoSerializer
+
+class CustomTokenObtainPairView(TokenObtainPairView):
+    serializer_class = CustomTokenObtainPairSerializer
 
 @api_view(['GET'])
 def casos_por_bairro(request): # funcao para agrupar o campo bairro e contar os numeros de registros

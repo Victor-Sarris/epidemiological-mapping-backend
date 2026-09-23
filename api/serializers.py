@@ -1,5 +1,6 @@
 from django.contrib.auth.models import Group, User
 from rest_framework import serializers
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from .models import PacienteDengue, PacienteTuberculose, PacienteSifilis, PacienteChagas, PacienteViolenciaDomestica, \
     PacienteHans, PacienteHepatite, PacienteAnimaisPec, PacienteIntoxicacao, PacienteLeish, PacienteAidsAdulto
 
@@ -70,3 +71,10 @@ class PacienteAidsAdultoSerializer(serializers.ModelSerializer):
     class Meta:
         model = PacienteAidsAdulto
         fields = "__all__"
+
+class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
+    def validate(self, attrs):
+        data = super().validate(attrs)
+        data['username'] = self.user.username
+        data['first_name'] = self.user.first_name
+        return data

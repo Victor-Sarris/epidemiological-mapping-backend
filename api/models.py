@@ -59,6 +59,7 @@ class PacienteAnimaisPec(models.Model):
     id_unidade = models.TextField(null=True, blank=True)
     nm_ubs = models.TextField(null=True, blank=True)
     hospital = models.TextField(null=True, blank=True)
+    ano_notific = models.TextField(null=True, blank=True)
     nu_notific = models.TextField(null=True, blank=True)
 
 class PacienteIntoxicacao(models.Model):
