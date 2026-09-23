@@ -20,6 +20,7 @@ router.register(r'animaispec', views.PacienteAnimaisPecViewSet)
 router.register(r'intoxicacao', views.PacienteIntoxicacaoViewSet)
 router.register(r'leish', views.PacienteLeishViewSet)
 router.register(r'aidsadulta', views.PacienteAidsAdultoViewSet)
+router.register(r'coberturavacinal', views.CoberturaVacinalViewSet)
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include(router.urls)),

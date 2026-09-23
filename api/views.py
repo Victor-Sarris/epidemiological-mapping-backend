@@ -2,10 +2,10 @@ from rest_framework import viewsets
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from django.db.models import Count, Model
-from .models import PacienteDengue, PacienteHans, PacienteHepatite, PacienteAnimaisPec, PacienteIntoxicacao, PacienteLeish, PacienteAidsAdulto
+from .models import PacienteDengue, PacienteHans, PacienteHepatite, PacienteAnimaisPec, PacienteIntoxicacao, PacienteLeish, PacienteAidsAdulto, CoberturaVacinal
 from .serializers import PacienteDengueSerializer, PacienteTuberculoseSerializer, PacienteViolenciaDomestica, \
     PacienteSifilis, \
-    PacienteSifilisSerializer, PacienteViolenciaDomesticaSerializer, PacienteChagas, PacienteChagasSerializer, PacienteHansSerializer, PacienteHepatiteSerializer, PacienteAnimaisPecSerializer, PacienteIntoxicacaoSerializer, PacienteLeishSerializer, PacienteAidsAdultoSerializer
+    PacienteSifilisSerializer, PacienteViolenciaDomesticaSerializer, PacienteChagas, PacienteChagasSerializer, PacienteHansSerializer, PacienteHepatiteSerializer, PacienteAnimaisPecSerializer, PacienteIntoxicacaoSerializer, PacienteLeishSerializer, PacienteAidsAdultoSerializer, CoberturaVacinalSerializer
 from api.models import PacienteTuberculose
 from rest_framework_simplejwt.views import TokenObtainPairView
 from .serializers import CustomTokenObtainPairSerializer
@@ -64,6 +64,10 @@ class PacienteAidsAdultoViewSet(viewsets.ModelViewSet):
 
 class CustomTokenObtainPairView(TokenObtainPairView):
     serializer_class = CustomTokenObtainPairSerializer
+
+class CoberturaVacinalViewSet(viewsets.ModelViewSet):
+    queryset = CoberturaVacinal.objects.all().order_by('-ano')
+    serializer_class = CoberturaVacinalSerializer
 
 @api_view(['GET'])
 def casos_por_bairro(request): # funcao para agrupar o campo bairro e contar os numeros de registros

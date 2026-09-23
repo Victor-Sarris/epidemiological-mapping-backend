@@ -2,7 +2,7 @@ from django.contrib.auth.models import Group, User
 from rest_framework import serializers
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from .models import PacienteDengue, PacienteTuberculose, PacienteSifilis, PacienteChagas, PacienteViolenciaDomestica, \
-    PacienteHans, PacienteHepatite, PacienteAnimaisPec, PacienteIntoxicacao, PacienteLeish, PacienteAidsAdulto
+    PacienteHans, PacienteHepatite, PacienteAnimaisPec, PacienteIntoxicacao, PacienteLeish, PacienteAidsAdulto, CoberturaVacinal
 
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
@@ -78,3 +78,8 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
         data['username'] = self.user.username
         data['first_name'] = self.user.first_name
         return data
+
+class CoberturaVacinalSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CoberturaVacinal
+        fields = '__all__'
