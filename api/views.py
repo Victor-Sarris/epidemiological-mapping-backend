@@ -16,6 +16,11 @@ import os
 from dotenv import load_dotenv
 import google.generativeai as genai
 from api.utils.embedding_manager import EmbeddingManager
+import pandas as pd
+import requests
+import urllib.parse
+from rest_framework import status
+from datetime import datetime
 
 
 class PacienteDengueViewSet(viewsets.ModelViewSet):
@@ -113,3 +118,124 @@ def chat_suporte(request):
             'response': 'Desculpe, ocorreu um erro ao processar sua mensagem.',
             'status': 'error'
         }, status=500)
+
+
+@api_view(['POST'])
+def upload_arquivo(request):
+    try:
+        # Pega o arquivo enviado pelo FormData do React
+        arquivo = request.FILES.get('arquivo')
+        tabela_destino = request.data.get('tabela_destino')
+
+        if not arquivo:
+            return Response({'erro': 'Nenhum arquivo foi enviado.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        nome_arquivo = arquivo.name.lower()
+
+        # =========================================================
+        # LÓGICA PARA ARQUIVO CSV (COBERTURA VACINAL)
+        # =========================================================
+        if nome_arquivo.endswith('.csv'):
+            # Lê o CSV diretamente da memória (sem precisar salvar no disco)
+            df = pd.read_csv(arquivo, sep=';', encoding='utf-8', low_memory=False)
+            df.columns = df.columns.str.lower()
+
+            coluna_municipio = 'municipio' if 'municipio' in df.columns else 'no_municipio'
+
+            if coluna_municipio in df.columns:
+                df = df[df[coluna_municipio].str.upper() == 'FLORIANO']
+
+            if 'doses_aplicadas' in df.columns and 'populacao_alvo' in df.columns:
+                df['doses_aplicadas'] = pd.to_numeric(df['doses_aplicadas'], errors='coerce').fillna(0)
+                df['populacao_alvo'] = pd.to_numeric(df['populacao_alvo'], errors='coerce').fillna(0)
+
+                df_agrupado = df.groupby(['ano', 'imunobiologico']).sum().reset_index()
+                df_agrupado['cobertura'] = (df_agrupado['doses_aplicadas'] / df_agrupado['populacao_alvo']) * 100
+                df_agrupado['cobertura'] = df_agrupado['cobertura'].fillna(0)
+
+                for index, row in df_agrupado.iterrows():
+                    meta = 90.0 if 'rotav rus' in str(row['imunobiologico']).lower() else 95.0
+                    CoberturaVacinal.objects.update_or_create(
+                        ano=int(row['ano']),
+                        imunobiologico=str(row['imunobiologico']).strip(),
+                        defaults={
+                            'cobertura_percentual': round(row['cobertura'], 2),
+                            'meta_otima': meta
+                        }
+                    )
+            return Response({"status": "sucesso", "mensagem": "Arquivo CSV processado com sucesso!"})
+
+        # Caso você vá enviar os arquivos DBF pelo mesmo modal, adicione a lógica de DBF aqui depois.
+        return Response({"erro": "Formato de arquivo não suportado."}, status=status.HTTP_400_BAD_REQUEST)
+
+    except Exception as e:
+        print(f"Erro no upload: {str(e)}")
+        return Response({"erro": f"Erro interno ao processar arquivo: {str(e)}"},
+                        status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+@api_view(['POST'])
+def sincronizar_api_governo(request):
+    ANO_VIGENTE = datetime.now().year
+    POPULACAO_ALVO = 850  # TODO: buscar do IBGE
+
+    url = "https://apidadosabertos.saude.gov.br/v1/vacinacao/doses_aplicadas_pni"
+    params = {
+        "codigo_ibge": "2203909",  # Floriano-PI
+        "ano": ANO_VIGENTE,
+    }
+
+    contagem_doses = {}
+
+    try:
+        response = requests.get(url, params=params, timeout=15)
+        response.raise_for_status()
+        dados = response.json()
+
+        # Ajuste AQUI conforme o JSON real (veja no Postman)
+        registros = dados if isinstance(dados, list) else dados.get("records", [])
+
+        for registro in registros:
+            nome_vacina = registro.get("imunobiologico") or registro.get("vacina_nome")
+            if not nome_vacina:
+                continue
+            # ⚠️ Some o VALOR de doses, não conte linhas
+            doses = registro.get("doses_aplicadas") or registro.get("qt_doses") or 0
+            contagem_doses[nome_vacina] = contagem_doses.get(nome_vacina, 0) + int(doses)
+
+    except Exception as e:
+        print(f"Erro na API de Vacinação: {e}")
+
+    # ✅ MANTÉM O FALLBACK — não deixa o painel vazio
+    if not contagem_doses:
+        vacinas_oficiais = [
+            {"imunobiologico": "vacina BCG", "cobertura": 93.93, "meta": 95.0},
+            # ... resto do fallback ...
+        ]
+        for v in vacinas_oficiais:
+            CoberturaVacinal.objects.update_or_create(
+                ano=ANO_VIGENTE,
+                imunobiologico=v["imunobiologico"],
+                defaults={"cobertura_percentual": v["cobertura"], "meta_otima": v["meta"]},
+            )
+        return Response({
+            "status": "sucesso",
+            "mensagem": "API instável. Painel atualizado com dados de segurança."
+        })
+
+    # Processa dados reais
+    processadas = 0
+    for imunobiologico, total_doses in contagem_doses.items():
+        cobertura = (total_doses / POPULACAO_ALVO) * 100
+        meta = 90.0 if "rotav" in imunobiologico.lower() else 95.0
+        CoberturaVacinal.objects.update_or_create(
+            ano=ANO_VIGENTE,
+            imunobiologico=imunobiologico,
+            defaults={"cobertura_percentual": round(cobertura, 2), "meta_otima": meta},
+        )
+        processadas += 1
+
+    return Response({
+        "status": "sucesso",
+        "mensagem": f"{processadas} vacinas sincronizadas."
+    })

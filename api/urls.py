@@ -26,6 +26,8 @@ urlpatterns = [
     path('api/', include(router.urls)),
     path('api/casos_por_bairro/', views.casos_por_bairro, name='casos_por_bairro'),
     path('api/chat/', views.chat_suporte, name='chat_suporte'),
+    path('api/upload/', views.upload_arquivo, name='upload_arquivo'),
+    path('api/sincronizar-governo/', views.sincronizar_api_governo, name='sincronizar_api_governo'),
 
     # Rotas do Token
     path('api/token/', CustomTokenObtainPairView.as_view(), name='token_obtain_pair'),
