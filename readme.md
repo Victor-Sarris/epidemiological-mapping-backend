@@ -92,8 +92,7 @@ O painel admin identifica automaticamente a doença pelo nome do arquivo (ex: `d
 | `GET` | `/api/animaispec/`           | Registros individuais de animais peçonhentos.              |
 | `GET` | `/api/intoxicacao/`           | Registros individuais de intoxicação.                      |
 | `GET` | `/api/leish/`           | Registros individuais de leishmaniose.                     |
-| `GET` | `/api/aidsadulta/`           | Registros individuais de aids adulta.                      |
-| `GET` | `/api/coberturavacinal/`           | Registros individuais de cobertura vacinal.                |
+| `GET` | `/api/aidsadulta/`           | Registros individuais de aids adulta.                            |
 | `GET` | `/api/casos_por_bairro/` | Dados agrupados de dengue por bairro (útil para Heatmaps). |
 | `POST` | `/api/chat/`             | Endpoint do assistente virtual governado por IA (Gemini).  |
 | `POST` | `/api/token/`            | Autenticação e geração de JWT.                             |
