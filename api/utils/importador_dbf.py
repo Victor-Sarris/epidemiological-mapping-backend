@@ -1,7 +1,7 @@
 import os
 from doctest import register_optionflag
 
-from api.models import PacienteDengue, PacienteTuberculose, PacienteSifilis, PacienteViolenciaDomestica, PacienteChagas, PacienteHans, PacienteHepatite, PacienteAnimaisPec, PacienteIntoxicacao, PacienteLeish, PacienteAidsAdulto
+from api.models import PacienteDengue, PacienteTuberculose, PacienteSifilis, PacienteViolenciaDomestica, PacienteChagas, PacienteHans, PacienteHepatite, PacienteAnimaisPec, PacienteIntoxicacao, PacienteLeish, PacienteAidsAdulto, CoberturaVacinal
 from dbfread import DBF
 from datetime import datetime
 
@@ -17,6 +17,7 @@ MAPEA_ENDEMIAS = {
     'intoxicacao': PacienteIntoxicacao,
     'leish': PacienteLeish,
     'aidsadulto': PacienteAidsAdulto,
+    'coberturavacinal': CoberturaVacinal
 }
 
 
@@ -153,6 +154,15 @@ def processar_arquivo_dbf(caminho_arquivo):
             nova_linha = PacienteAidsAdulto(
                 ano_notific=record.get('ANO_NOTIFIC'),
                 nu_notific=record.get('NU_NOTIFIC'),
+            )
+            registros_para_salvar.append(nova_linha)
+        elif modelo_alvo == CoberturaVacinal:
+            nova_linha = CoberturaVacinal(
+                ano=record.get('ANO'),
+                imunobiologico=record.get('IMUNOBIOLOGICO'),
+                cobertura_percentual=record.get('COBERTURA_PERCENTUAL'),
+                meta_otima=record.get('META_OTIMA'),
+                data_atualizacao=record.get('DATA_ATUALIZACAO'),
             )
             registros_para_salvar.append(nova_linha)
 
