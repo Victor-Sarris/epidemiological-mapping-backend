@@ -81,6 +81,7 @@ def processar_arquivo_dbf(caminho_arquivo):
                 id_unidade=record.get('ID_UNIDADE') or record.get('ID_UNID'),
                 nm_ubs=record.get('NM_UBS') or record.get('ID_UNIDADE'),
                 nu_notific=record.get('NU_NOTIFIC') or record.get('NU_NOTIFICA'),
+                ano_notific=record.get('ANO_NOTIFIC'),
             )
             registros_para_salvar.append(nova_linha)
 
@@ -93,6 +94,7 @@ def processar_arquivo_dbf(caminho_arquivo):
                 id_agravo=record.get('ID_AGRAVO'),
                 nm_pacient=record.get('NM_PACIENT'),
                 nm_ubs=record.get('NM_UBS'),
+                ano_notific=record.get('ANO_NOTIFIC'),
             )
 
         elif modelo_alvo == PacienteViolenciaDomestica:
@@ -100,6 +102,7 @@ def processar_arquivo_dbf(caminho_arquivo):
                 id_unidade=record.get('ID_UNIDADE'),
                 nm_ubs=record.get('NM_UBS'),
                 nu_notific=record.get('NU_NOTIFIC'),
+                ano_notific=record.get('ANO_NOTIFIC'),
             )
 
         elif modelo_alvo == PacienteChagas:
@@ -107,6 +110,7 @@ def processar_arquivo_dbf(caminho_arquivo):
                 id_unidade=record.get('ID_UNIDADE'),
                 nm_ubs=record.get('NM_UBS'),
                 nu_notific=record.get('NU_NOTIFIC'),
+                ano_notific=record.get('ANO_NOTIFIC'),
             )
             registros_para_salvar.append(nova_linha)
 
@@ -115,6 +119,7 @@ def processar_arquivo_dbf(caminho_arquivo):
                 id_unidade=record.get('ID_UNIDADE'),
                 nm_ubs=record.get('NM_UBS'),
                 nu_notific=record.get('NU_NOTIFIC'),
+                ano_notific=record.get('ANO_NOTIFIC'),
             )
             registros_para_salvar.append(nova_linha)
 
@@ -123,6 +128,7 @@ def processar_arquivo_dbf(caminho_arquivo):
                 id_unidade=record.get('ID_UNIDADE'),
                 nm_ubs=record.get('NM_UBS'),
                 nu_notific=record.get('NU_NOTIFIC'),
+                ano_notific=record.get('ANO_NOTIFIC'),
             )
             registros_para_salvar.append(nova_linha)
 
@@ -132,6 +138,7 @@ def processar_arquivo_dbf(caminho_arquivo):
                 nm_ubs=record.get('NM_UBS'),
                 nu_notific=record.get('NU_NOTIFIC'),
                 hospital=record.get('HOSPITAL'),
+                ano_notific=record.get('ANO_NOTIFIC'),
             )
             registros_para_salvar.append(nova_linha)
 
@@ -163,6 +170,7 @@ def processar_arquivo_dbf(caminho_arquivo):
                 cobertura_percentual=record.get('COBERTURA_PERCENTUAL'),
                 meta_otima=record.get('META_OTIMA'),
                 data_atualizacao=record.get('DATA_ATUALIZACAO'),
+                ano_notific=record.get('ANO_NOTIFIC'),
             )
             registros_para_salvar.append(nova_linha)
 

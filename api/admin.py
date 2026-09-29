@@ -16,32 +16,32 @@ class PacienteDengueAdmin(admin.ModelAdmin):
 
 @admin.register(PacienteTuberculose)
 class PacienteTuberculoseAdmin(admin.ModelAdmin):
-    list_display = ("id_unidade", "nm_ubs", "nu_notific")
+    list_display = ("id_unidade", "nm_ubs", "nu_notific", "ano_notific")
     search_fields = ("id_unidade", "nm_ubs", "nu_notific")
 
 @admin.register(PacienteSifilis)
 class PacienteSifilisAdmin(admin.ModelAdmin):
-    list_display = ("nu_notific", "id_unidade", "un_saude", "nm_ubs", "mu_residen", "nu_notific", "dt_notific", "id_agravo", "nm_pacient")
+    list_display = ("nu_notific", "id_unidade", "un_saude", "nm_ubs", "mu_residen", "nu_notific", "dt_notific", "ano_notific", "id_agravo", "nm_pacient")
     search_fields = ("nu_notific", "nu_notific", "id_agravo", "id_unidade")
 
 @admin.register(PacienteChagas)
 class PacienteChagasAdmin(admin.ModelAdmin):
-    list_display = ("id_unidade", "nm_ubs", "nu_notific")
+    list_display = ("id_unidade", "nm_ubs", "nu_notific", "ano_notific")
     search_fields = ("id_unidade", "nm_ubs", "nu_notific")
 
 @admin.register(PacienteViolenciaDomestica)
 class PacienteViolenciaDomesticaAdmin(admin.ModelAdmin):
-    list_display = ("id_unidade", "nm_ubs", "nu_notific")
+    list_display = ("id_unidade", "nm_ubs", "nu_notific", "ano_notific")
     search_fields = ("nu_notific", "id_unidade", "nm_ubs")
 
 @admin.register(PacienteHans)
 class PacienteHansAdmin(admin.ModelAdmin):
-    list_display = ("id_unidade", "nm_ubs", "nu_notific")
+    list_display = ("id_unidade", "nm_ubs", "nu_notific", "ano_notific")
     search_fields = ("nu_notific", "id_unidade", "nm_ubs")
 
 @admin.register(PacienteHepatite)
 class PacienteHepatiteAdmin(admin.ModelAdmin):
-    list_display = ("id_unidade", "nm_ubs", "nu_notific")
+    list_display = ("id_unidade", "nm_ubs", "nu_notific", "ano_notific")
     search_fields = ("nu_notific", "id_unidade", "nm_ubs")
 
 @admin.register(PacienteAnimaisPec)
@@ -68,7 +68,6 @@ class PacienteAidsAdultoAdmin(admin.ModelAdmin):
 class CoberturaVacinalAdmin(admin.ModelAdmin):
     list_display = ("ano", 'imunobiologico', "cobertura_percentual", "meta_otima", 'data_atualizacao')
     search_fields = ("ano", 'imunobiologico', "cobertura_percentual", "meta_otima", 'data_atualizacao')
-
 
 @admin.register(UploadDBF)
 class UploadDBFAdmin(admin.ModelAdmin):
@@ -185,6 +184,7 @@ class UploadDBFAdmin(admin.ModelAdmin):
                     id_unidade=record.get('ID_UNIDADE') or record.get('ID_UNID'),
                     nm_ubs=record.get('NM_UBS') or record.get('ID_UNIDADE'),
                     nu_notific=record.get('NU_NOTIFIC') or record.get('NU_NOTIFICA'),
+                    ano_notific=record.get('ANO_NOTIFIC'),
                 )
                 registros_tubercu.append(nova_linha)
             elif 'sifi' in nome_arquivo:
@@ -197,6 +197,7 @@ class UploadDBFAdmin(admin.ModelAdmin):
                     dt_notific=record.get('DT_NOTIFIC'),
                     id_agravo=record.get('ID_AGRAVO'),
                     nm_pacient=record.get('NM_PACIENT'),
+                    ano_notific=record.get('ANO_NOTIFIC'),
                 )
                 registros_sifi.append(nova_linha)
             elif 'violencia' in nome_arquivo:
@@ -204,6 +205,7 @@ class UploadDBFAdmin(admin.ModelAdmin):
                     id_unidade=record.get('ID_UNIDADE') or record.get('ID_UNID'),
                     nm_ubs=record.get('NM_UBS') or record.get('ID_UBS'),
                     nu_notific=record.get('NU_NOTIFIC'),
+                    ano_notific=record.get('ANO_NOTIFIC'),
                 )
                 registros_violencia.append(nova_linha)
             elif 'chaga' in nome_arquivo:
@@ -211,6 +213,7 @@ class UploadDBFAdmin(admin.ModelAdmin):
                     id_unidade=record.get('ID_UNIDADE') or record.get('ID_UNID'),
                     nm_ubs=record.get('NM_UBS') or record.get('ID_UBS'),
                     nu_notific=record.get('NU_NOTIFIC') or record.get('NU_NOTIFICA'),
+                    ano_notific=record.get('ANO_NOTIFIC'),
                 )
                 registros_chagas.append(nova_linha)
             elif 'hans' in nome_arquivo:
@@ -218,6 +221,7 @@ class UploadDBFAdmin(admin.ModelAdmin):
                     id_unidade=record.get('ID_UNIDADE') or record.get('ID_UNID'),
                     nm_ubs=record.get('NM_UBS') or record.get('ID_UBS'),
                     nu_notific=record.get('NU_NOTIFIC') or record.get('NU_NOTIFICA'),
+                    ano_notific=record.get('ANO_NOTIFIC'),
                 )
                 registros_hans.append(nova_linha)
             elif 'hepatite' in nome_arquivo:
@@ -225,6 +229,7 @@ class UploadDBFAdmin(admin.ModelAdmin):
                     id_unidade=record.get('ID_UNIDADE') or record.get('ID_UNID'),
                     nm_ubs=record.get('NM_UBS') or record.get('ID_UBS'),
                     nu_notific=record.get('NU_NOTIFIC') or record.get('NU_NOTIFICA'),
+                    ano_notific=record.get('ANO_NOTIFIC'),
                 )
                 registros_hepatite.append(nova_linha)
             elif 'animaispec' in nome_arquivo:

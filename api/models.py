@@ -21,6 +21,8 @@ class PacienteTuberculose(models.Model):
     id_unidade = models.TextField(null=True, blank=True)
     nm_ubs = models.TextField(null=True, blank=True)
     nu_notific = models.TextField(null=True, blank=True)
+    ano_notific = models.TextField(null=True, blank=True)
+
 
     def __str__(self):
         return f"{self.nm_ubs} - {self.nu_notific}"
@@ -34,26 +36,31 @@ class PacienteSifilis(models.Model):
     dt_notific=models.DateField(null=True, blank=True)
     id_agravo=models.TextField(null=True, blank=True)
     nm_pacient=models.TextField(null=True, blank=True)
+    ano_notific = models.TextField(null=True, blank=True)
 
 class PacienteChagas(models.Model):
     id_unidade = models.TextField(null=True, blank=True)
     nm_ubs = models.TextField(null=True, blank=True)
     nu_notific = models.TextField(null=True, blank=True)
+    ano_notific = models.TextField(null=True, blank=True)
 
 class PacienteHans(models.Model):
     id_unidade = models.TextField(null=True, blank=True)
     nm_ubs = models.TextField(null=True, blank=True)
     nu_notific = models.TextField(null=True, blank=True)
+    ano_notific = models.TextField(null=True, blank=True)
 
 class PacienteViolenciaDomestica(models.Model):
     nu_notific = models.TextField(null=True, blank=True)
     id_unidade = models.TextField(null=True, blank=True)
     nm_ubs = models.TextField(null=True, blank=True)
+    ano_notific = models.TextField(null=True, blank=True)
 
 class PacienteHepatite(models.Model):
     nu_notific = models.TextField(null=True, blank=True)
     id_unidade = models.TextField(null=True, blank=True)
     nm_ubs = models.TextField(null=True, blank=True)
+    ano_notific = models.TextField(null=True, blank=True)
 
 class PacienteAnimaisPec(models.Model):
     id_unidade = models.TextField(null=True, blank=True)
