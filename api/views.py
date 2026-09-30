@@ -15,6 +15,7 @@ from flask_cors import CORS
 import os
 from dotenv import load_dotenv
 import google.generativeai as genai
+from .utils.assistente import TOOLS, executar_funcao
 from api.utils.embedding_manager import EmbeddingManager
 import pandas as pd
 import requests
@@ -83,41 +84,161 @@ def casos_por_bairro(request): # funcao para agrupar o campo bairro e contar os 
     return Response(dados_formatados)
 
 
-# Configuração do Gemini
 genai.configure(api_key=os.getenv('GOOGLE_API_KEY'))
-# O modelo de geração de texto correto:
-modelo_chat = genai.GenerativeModel('gemini-3.6-flash')
+
+SYSTEM_PROMPT = """Você é o assistente virtual do EPI-DATA, plataforma de vigilância
+epidemiológica da Secretaria de Saúde de Floriano-PI.
+
+REGRAS:
+- Responda SEMPRE em português, de forma concisa (máx 3 parágrafos).
+- NUNCA forneça diagnóstico médico, prescrição ou orientação clínica individual.
+- SEMPRE que a pergunta envolver números (quantos casos, total, ranking de bairros,
+  cobertura vacinal, panorama), CHAME AS FERRAMENTAS. Nunca invente números.
+- Ao citar números, deixe explícito o período (ano) e a doença.
+- Se uma ferramenta retornar erro ou a pergunta estiver fora do escopo,
+  oriente o usuário a contatar vigilanciafloriano@gmail.com.
+- Não invente funcionalidades que não existem na plataforma.
+
+Quando você chamar uma ferramenta que retorna ranking/KPI/tabela:
+- Seu texto de resposta deve ser CURTO (1-2 frases), tipo um lead jornalístico:
+  destaque o principal achado, sem repetir a lista inteira.
+- O detalhamento já aparece visualmente no card.
+
+Ex: 'O bairro Irapuá II lidera as notificações de dengue, com 34 casos — 
+quase 10% acima do segundo colocado, São Cristóvão.'"""
+
+modelo_chat = genai.GenerativeModel(
+    'gemini-3.6-flash',
+    tools=TOOLS,
+    system_instruction=SYSTEM_PROMPT,
+)
+
 embedding_manager = EmbeddingManager(os.getenv('GOOGLE_API_KEY'))
 
 
 @api_view(['POST'])
 def chat_suporte(request):
     try:
-        user_message = request.data.get('message', '')
+        user_message = (request.data.get('message') or '').strip()
+        if not user_message:
+            return Response({'response': 'Envie uma pergunta.',
+                             'status': 'error'}, status=400)
 
         context = embedding_manager.search_query(user_message)
+        chat = modelo_chat.start_chat()
 
-        prompt = f"""Com base apenas no seguinte contexto:
+        response = chat.send_message(
+            f"Contexto:\n{context}\n\nPergunta: {user_message}"
+        )
 
-        {context}
+        tool_calls = []   # <── NOVO: acumula o que foi chamado
+        MAX_ITERACOES = 5
 
-        Responda à pergunta: {user_message}
-        Responda de forma concisa e direta, em português."""
+        for _ in range(MAX_ITERACOES):
+            chamadas = [
+                part.function_call
+                for part in response.parts
+                if getattr(part, "function_call", None) and part.function_call.name
+            ]
+            if not chamadas:
+                break
 
-        # Gera a resposta
-        response = modelo_chat.generate_content(prompt)
+            partes_resposta = []
+            for fc in chamadas:
+                args = dict(fc.args) if fc.args else {}
+                resultado = executar_funcao(fc.name, args)
+
+                # Guarda pro frontend
+                tool_calls.append({
+                    "tool": fc.name,
+                    "args": args,
+                    "resultado": resultado,
+                })
+
+                partes_resposta.append(
+                    genai.protos.Part(
+                        function_response=genai.protos.FunctionResponse(
+                            name=fc.name,
+                            response={"result": resultado},
+                        )
+                    )
+                )
+
+            response = chat.send_message(
+                genai.protos.Content(parts=partes_resposta)
+            )
+
+        texto_final = "".join(
+            p.text for p in response.parts if getattr(p, "text", None)
+        ).strip()
+
+        # NOVO: monta um bloco estruturado opcional
+        structured = _montar_structured(tool_calls)
 
         return Response({
-            'response': response.text,
+            'response': texto_final or 'Não consegui responder agora.',
+            'structured': structured,   # ← None se não houver ranking/tabela
             'status': 'success'
         })
-
     except Exception as e:
-        print(f"Erro no chat: {str(e)}")
-        return Response({
-            'response': 'Desculpe, ocorreu um erro ao processar sua mensagem.',
-            'status': 'error'
-        }, status=500)
+        print(f"Erro no chat: {e}")
+        import traceback; traceback.print_exc()
+        return Response({'response': 'Erro ao processar.', 'status': 'error'}, status=500)
+
+
+def _montar_structured(tool_calls):
+    """Transforma o resultado da tool em algo que o frontend sabe desenhar."""
+    if not tool_calls:
+        return None
+
+    ultima = tool_calls[-1]
+    nome = ultima["tool"]
+    res = ultima["resultado"]
+
+    if nome == "ranking_bairros" and res.get("ranking"):
+        return {
+            "tipo": "ranking",
+            "titulo": f"Casos de Dengue por bairro" + (f" — {res['ano']}" if res.get("ano") else ""),
+            "coluna": "Bairro",
+            "itens": [
+                {"label": r["bairro"], "valor": r["casos"]}
+                for r in res["ranking"]
+            ],
+        }
+
+    if nome == "consultar_casos" and "total" in res:
+        return {
+            "tipo": "kpi",
+            "titulo": f"{res['doenca'].capitalize()}"
+                     + (f" — {res['ano']}" if res.get("ano") else ""),
+            "valor": res["total"],
+            "subtitulo": "casos notificados",
+        }
+
+    if nome == "cobertura_vacinal" and res.get("resultados"):
+        return {
+            "tipo": "tabela",
+            "titulo": "Cobertura vacinal",
+            "colunas": ["Imunobiológico", "Ano", "Cobertura", "Meta"],
+            "linhas": [
+                [r["imunobiologico"], r["ano"],
+                 f"{r['cobertura_percentual']}%", f"{r['meta_otima']}%"]
+                for r in res["resultados"]
+            ],
+        }
+
+    if nome == "resumo_geral" and res.get("totais"):
+        return {
+            "tipo": "ranking",
+            "titulo": f"Panorama geral" + (f" — {res['ano']}" if res.get("ano") else ""),
+            "coluna": "Doença",
+            "itens": sorted(
+                [{"label": k.capitalize(), "valor": v} for k, v in res["totais"].items()],
+                key=lambda x: x["valor"], reverse=True,
+            ),
+        }
+
+    return None
 
 
 @api_view(['POST'])
@@ -132,11 +253,7 @@ def upload_arquivo(request):
 
         nome_arquivo = arquivo.name.lower()
 
-        # =========================================================
-        # LÓGICA PARA ARQUIVO CSV (COBERTURA VACINAL)
-        # =========================================================
         if nome_arquivo.endswith('.csv'):
-            # Lê o CSV diretamente da memória (sem precisar salvar no disco)
             df = pd.read_csv(arquivo, sep=';', encoding='utf-8', low_memory=False)
             df.columns = df.columns.str.lower()
 
@@ -181,7 +298,7 @@ def sincronizar_api_governo(request):
 
     url = "https://apidadosabertos.saude.gov.br/v1/vacinacao/doses_aplicadas_pni"
     params = {
-        "codigo_ibge": "2203909",  # Floriano-PI
+        "codigo_ibge": "2203909",
         "ano": ANO_VIGENTE,
     }
 
@@ -199,18 +316,16 @@ def sincronizar_api_governo(request):
             nome_vacina = registro.get("imunobiologico") or registro.get("vacina_nome")
             if not nome_vacina:
                 continue
-            # ⚠️ Some o VALOR de doses, não conte linhas
             doses = registro.get("doses_aplicadas") or registro.get("qt_doses") or 0
             contagem_doses[nome_vacina] = contagem_doses.get(nome_vacina, 0) + int(doses)
 
     except Exception as e:
         print(f"Erro na API de Vacinação: {e}")
 
-    # ✅ MANTÉM O FALLBACK — não deixa o painel vazio
     if not contagem_doses:
         vacinas_oficiais = [
             {"imunobiologico": "vacina BCG", "cobertura": 93.93, "meta": 95.0},
-            # ... resto do fallback ...
+
         ]
         for v in vacinas_oficiais:
             CoberturaVacinal.objects.update_or_create(
@@ -223,7 +338,6 @@ def sincronizar_api_governo(request):
             "mensagem": "API instável. Painel atualizado com dados de segurança."
         })
 
-    # Processa dados reais
     processadas = 0
     for imunobiologico, total_doses in contagem_doses.items():
         cobertura = (total_doses / POPULACAO_ALVO) * 100
